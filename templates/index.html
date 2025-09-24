@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Algorithm Visualizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-sort-amount-down"></i> Sorting Algorithm Visualizer</h1>
+                <p>Visualize sorting algorithms with step-by-step explanations</p>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Left Panel - Controls -->
+            <div class="control-panel">
+                <div class="control-section">
+                    <h3><i class="fas fa-cog"></i> Controls</h3>
+                    
+                    <div class="control-group">
+                        <label for="algorithm"><i class="fas fa-project-diagram"></i> Algorithm</label>
+                        <select id="algorithm">
+                            {% for key, value in algorithms.items() %}
+                            <option value="{{ key }}">{{ value.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="arraySize"><i class="fas fa-chart-bar"></i> Array Size</label>
+                        <div class="slider-container">
+                            <input type="range" id="arraySize" min="5" max="15" value="10">
+                            <span id="sizeValue">10</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="speed"><i class="fas fa-tachometer-alt"></i> Speed (ms)</label>
+                        <div class="slider-container">
+                            <input type="range" id="speed" min="100" max="2000" value="800">
+                            <span id="speedValue">800</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3><i class="fas fa-play-circle"></i> Actions</h3>
+                    <div class="action-buttons">
+                        <button id="generateBtn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> New Array
+                        </button>
+                        <button id="sortBtn" class="btn btn-success">
+                            <i class="fas fa-play"></i> Start
+                        </button>
+                        <button id="resetBtn" class="btn btn-danger" disabled>
+                            <i class="fas fa-stop"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3><i class="fas fa-vial"></i> Test Cases</h3>
+                    <div class="case-buttons">
+                        <button id="bestCaseBtn" class="case-btn best">
+                            <i class="fas fa-trophy"></i> Best Case
+                        </button>
+                        <button id="worstCaseBtn" class="case-btn worst">
+                            <i class="fas fa-bomb"></i> Worst Case
+                        </button>
+                        <button id="randomCaseBtn" class="case-btn random active">
+                            <i class="fas fa-random"></i> Random
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel - Visualization with Controls -->
+            <div class="visualization-panel">
+                <div class="visualization-header">
+                    <h3><i class="fas fa-eye"></i> Visualization</h3>
+                    <div class="visualization-controls">
+                        <button id="pauseBtn" class="btn btn-warning control-btn" disabled>
+                            <i class="fas fa-pause"></i> Pause
+                        </button>
+                        <div class="step-controls">
+                            <button id="prevStepBtn" class="step-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span id="stepCounter">Step: 0/0</span>
+                            <button id="nextStepBtn" class="step-btn" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-container">
+                    <div id="arrayVisualization" class="array-bars"></div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box unsorted"></div>
+                        <span>Unsorted</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box comparing"></div>
+                        <span>Comparing</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box swapping"></div>
+                        <span>Swapping</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box sorted"></div>
+                        <span>Sorted</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box pivot"></div>
+                        <span>Pivot</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Explanations -->
+            <div class="explanation-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-info-circle"></i> Explanations</h3>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="step">
+                        <i class="fas fa-list-ol"></i> Step
+                    </button>
+                    <button class="tab-btn" data-tab="logic">
+                        <i class="fas fa-brain"></i> Logic
+                    </button>
+                    <button class="tab-btn" data-tab="info">
+                        <i class="fas fa-chart-line"></i> Info
+                    </button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="stepTab" class="tab-pane active">
+                        <div class="explanation-box">
+                            <h4>Current Step Explanation</h4>
+                            <div class="explanation-text" id="stepExplanation">
+                                Select an algorithm and click Start to begin visualization.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="logicTab" class="tab-pane">
+                        <div class="explanation-box">
+                            <h4>Algorithm Logic</h4>
+                            <div class="explanation-text" id="logicExplanation">
+                                Detailed algorithm logic will appear here during visualization.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="infoTab" class="tab-pane">
+                        <div class="explanation-box">
+                            <h4>Algorithm Information</h4>
+                            <div class="explanation-text" id="algorithmInfo">
+                                Select an algorithm to see its details.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
